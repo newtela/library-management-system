@@ -3,19 +3,13 @@ using Spectre.Console;
 namespace TCSA.OOP.LibraryManagementSystem;
 
 // internal can be accessed by files in the same project
-// you can't create instances of static classes
-internal static class BooksController
+internal class BooksController
 {
-   private static List<string> _books = new()
-   {
-    "The Great Gatsby", "To Kill a Mockingbird", "1984", "Pride and Prejudice", "The Catcher in the Rye", "The Hobbit", "Moby-Dick", "War and Peace", "The Odyssey", "The Lord of the Rings", "Jane Eyre", "Animal Farm", "Brave New World", "The Chronicles of Narnia", "The Diary of a Young Girl", "The Alchemist", "Wuthering Heights", "Fahrenheit 451", "Catch-22", "The Hitchhiker's Guide to the Galaxy"
-   };
-
-   internal static void ViewBooks()
+   internal void ViewBooks()
    {
       AnsiConsole.MarkupLine("[yellow]List of books:[/]");
 
-      foreach (var book in _books)
+      foreach (var book in MockDatabase.Books)
       {
          AnsiConsole.MarkupLine($"- [cyan]{book}[/]");
       }
@@ -24,17 +18,17 @@ internal static class BooksController
       Console.ReadKey();
    }
 
-   internal static void AddBook()
+   internal void AddBook()
    {
       var title = AnsiConsole.Ask<string>("Enter the [green]title[/] of the book to add:");
 
-      if (_books.Contains(title))
+      if (MockDatabase.Books.Contains(title))
       {
          AnsiConsole.MarkupLine("[red]This book already exists[/]");
       }
       else
       {
-         _books.Add(title);
+         MockDatabase.Books.Add(title);
          AnsiConsole.MarkupLine("[green]Book added successfully[/]");
       }
 
@@ -42,9 +36,9 @@ internal static class BooksController
       Console.ReadKey();
    }
 
-   internal static void DeleteBook()
+   internal void DeleteBook()
    {
-      if (_books.Count == 0)
+      if (MockDatabase.Books.Count == 0)
       {
          AnsiConsole.MarkupLine("[red]No books available to delete");
          Console.ReadKey();
@@ -54,9 +48,9 @@ internal static class BooksController
       var bookToDelete = AnsiConsole.Prompt(
          new SelectionPrompt<string>()
             .Title("Select a [red]book[/] to delete:")
-            .AddChoices(_books));
+            .AddChoices(MockDatabase.Books));
 
-      if (_books.Remove(bookToDelete))
+      if (MockDatabase.Books.Remove(bookToDelete))
       {
          AnsiConsole.MarkupLine("[red]Book deleted successfully[/]");
       }
