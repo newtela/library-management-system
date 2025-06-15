@@ -4,7 +4,7 @@ using TCSA.OOP.LibraryManagementSystem.Models;
 namespace TCSA.OOP.LibraryManagementSystem.Controllers;
 
 // internal can be accessed by files in the same project
-internal class BooksController : IBaseController
+internal class BookController : BaseController, IBaseController
 {
    public void ViewItems()
    {
@@ -47,15 +47,16 @@ internal class BooksController : IBaseController
 
       if (MockDatabase.LibraryItems.OfType<Book>().Any(b => b.Name.Equals(title, StringComparison.OrdinalIgnoreCase)))
       {
-         AnsiConsole.MarkupLine("[red]This book already exists[/]");
+         DisplayMessage("This book already exists", "red");
       }
       else
       {
          var newBook = new Book(MockDatabase.LibraryItems.Count + 1, title, author, category, location, pages);
          MockDatabase.LibraryItems.Add(newBook);
-         AnsiConsole.MarkupLine("[green]Book added successfully[/]");
+         DisplayMessage("Book added successfully", "green");
       }
-      AnsiConsole.MarkupLine("Press any key to continue");
+
+      DisplayMessage("Press any key to continue");
       Console.ReadKey();
    }
 
@@ -65,7 +66,7 @@ internal class BooksController : IBaseController
       var books = MockDatabase.LibraryItems.OfType<Book>().ToList();
       if (books.Count == 0)
       {
-         AnsiConsole.MarkupLine("[red]No books available to delete");
+         DisplayMessage("No books available to delete", "red");
          Console.ReadKey();
          return;
       }
@@ -77,16 +78,23 @@ internal class BooksController : IBaseController
             .AddChoices(books)
       );
 
-      if (MockDatabase.LibraryItems.Remove(bookToDelete))
+      if (ConfirmDeletion(bookToDelete.Name))
       {
-         AnsiConsole.MarkupLine("[red]Book deleted successfully[/]");
+         if (MockDatabase.LibraryItems.Remove(bookToDelete))
+         {
+            DisplayMessage("Book deleted successfully", "red");
+         }
+         else
+         {
+            DisplayMessage("Book not found", "red");
+         }
       }
       else
       {
-         AnsiConsole.MarkupLine("[red]Book not found[/]");
+         DisplayMessage("Deletion cancelled");
       }
 
-      AnsiConsole.MarkupLine("Press any key to continue");
+      DisplayMessage("Press any key to continue");
       Console.ReadKey();
    }
 }
