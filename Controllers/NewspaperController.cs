@@ -3,7 +3,7 @@ using TCSA.OOP.LibraryManagementSystem.Models;
 
 namespace TCSA.OOP.LibraryManagementSystem.Controllers;
 
-internal class NewspaperController : IBaseController
+internal class NewspaperController : BaseController, IBaseController
 {
     public void ViewItems()
     {
@@ -30,7 +30,7 @@ internal class NewspaperController : IBaseController
         }
 
         AnsiConsole.Write(table);
-        AnsiConsole.MarkupLine("Press any key to continue");
+        DisplayMessage("Press any key to continue");
         Console.ReadKey();
     }
 
@@ -44,17 +44,17 @@ internal class NewspaperController : IBaseController
         if (MockDatabase.LibraryItems.OfType<Newspaper>()
             .Any(n => n.Name.Equals(title, StringComparison.OrdinalIgnoreCase)))
         {
-            AnsiConsole.MarkupLine("[red]This newspaper already exists[/]");
+            DisplayMessage("This newspaper already exists", "red");
         }
         else
         {
             var newNewspaper = new Newspaper(MockDatabase.LibraryItems.Count + 1, title, publisher, publishDate,
                 location);
             MockDatabase.LibraryItems.Add(newNewspaper);
-            AnsiConsole.MarkupLine("[green]Newspaper added successfully[/]");
+            DisplayMessage("Newspaper added successfully", "green");
         }
 
-        AnsiConsole.MarkupLine("Press any key to continue");
+        DisplayMessage("Press any key to continue");
         Console.ReadKey();
     }
 
@@ -62,8 +62,8 @@ internal class NewspaperController : IBaseController
     {
         if (MockDatabase.LibraryItems.OfType<Newspaper>().Count() == 0)
         {
-            AnsiConsole.MarkupLine("[red]No newspapers available to delete[/]");
-            AnsiConsole.MarkupLine("Press any key to continue");
+            DisplayMessage("No newspapers available to delete", "red");
+            DisplayMessage("Press any key to continue");
             Console.ReadKey();
             return;
         }
@@ -75,16 +75,23 @@ internal class NewspaperController : IBaseController
                 .AddChoices(MockDatabase.LibraryItems.OfType<Newspaper>())
         );
 
-        if (MockDatabase.LibraryItems.Remove(newspaperToDelete))
+        if (ConfirmDeletion(newspaperToDelete.Name))
         {
-            AnsiConsole.MarkupLine("[red]Newspaper deleted successfully[/]");
+            if (MockDatabase.LibraryItems.Remove(newspaperToDelete))
+            {
+                DisplayMessage("Newspaper deleted successfully", "red");
+            }
+            else
+            {
+                DisplayMessage("Newspaper not found", "red");
+            }
         }
         else
         {
-            AnsiConsole.MarkupLine("[red]Newspaper not found[/]");
+            DisplayMessage("Deletion cancelled");
         }
 
-        AnsiConsole.MarkupLine("Press any key to continue");
+        DisplayMessage("Press any key to continue");
         Console.ReadKey();
     }
 }

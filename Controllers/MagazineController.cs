@@ -3,7 +3,7 @@ using TCSA.OOP.LibraryManagementSystem.Models;
 
 namespace TCSA.OOP.LibraryManagementSystem.Controllers;
 
-internal class MagazineController : IBaseController
+internal class MagazineController : BaseController, IBaseController
 {
     public void ViewItems()
     {
@@ -32,7 +32,7 @@ internal class MagazineController : IBaseController
         }
 
         AnsiConsole.Write(table);
-        AnsiConsole.MarkupLine("Press any key to continue");
+        DisplayMessage("Press any key to continue");
         Console.ReadKey();
     }
 
@@ -47,17 +47,17 @@ internal class MagazineController : IBaseController
         if (MockDatabase.LibraryItems.OfType<Magazine>()
             .Any(m => m.Name.Equals(title, StringComparison.OrdinalIgnoreCase)))
         {
-            AnsiConsole.MarkupLine("[red]This magazine already exists[/]");
+            DisplayMessage("This magazine already exists", "red");
         }
         else
         {
             var newMagazine = new Magazine(MockDatabase.LibraryItems.Count + 1, title, publisher, publishDate, location,
                 issueNumber);
             MockDatabase.LibraryItems.Add(newMagazine);
-            AnsiConsole.MarkupLine("[green]Magazine added successfully[/]");
+            DisplayMessage("Magazine added successfully", "green");
         }
 
-        AnsiConsole.MarkupLine("Press any key to continue");
+        DisplayMessage("Press any key to continue");
         Console.ReadKey();
     }
 
@@ -65,8 +65,8 @@ internal class MagazineController : IBaseController
     {
         if (MockDatabase.LibraryItems.OfType<Magazine>().Count() == 0)
         {
-            AnsiConsole.MarkupLine("[red]No magazines available to delete[/]");
-            AnsiConsole.MarkupLine("Press any key to continue");
+            DisplayMessage("No magazines available to delete", "red");
+            DisplayMessage("Press any key to continue");
             Console.ReadKey();
             return;
         }
@@ -78,16 +78,23 @@ internal class MagazineController : IBaseController
                 .AddChoices(MockDatabase.LibraryItems.OfType<Magazine>())
         );
 
-        if (MockDatabase.LibraryItems.Remove(magazineToDelete))
+        if (ConfirmDeletion(magazineToDelete.Name))
         {
-            AnsiConsole.MarkupLine("[red]Magazine deleted successfully[/]");
+            if (MockDatabase.LibraryItems.Remove(magazineToDelete))
+            {
+                DisplayMessage("Magazine deleted successfully", "red");
+            }
+            else
+            {
+                DisplayMessage("Magazine not found", "red");
+            }
         }
         else
         {
-            AnsiConsole.MarkupLine("[red]Magazine not found[/]");
+            DisplayMessage("Deletion cancelled", "red");
         }
 
-        AnsiConsole.MarkupLine("Press any key to continue");
+        DisplayMessage("Press any key to continue");
         Console.ReadKey();
     }
 }
